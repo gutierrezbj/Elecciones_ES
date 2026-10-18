@@ -79,6 +79,7 @@ Desglose de Toledo por candidatura (fichero 10 frente a fichero 08 = BOE): FO �
 - **Escaños:** no cambian. D'Hondt de Toledo (6 escaños) con las cuatro candidaturas con escaño o cerca: PP 3, PSOE 2, VOX 1 tanto con la suma de mesas como con el dato oficial. Último cociente asignado: 48.938 frente a 48.844; siguiente, PSOE/3, 42.044 frente a 42.024.
 - **Evidencia necesaria:** acta de escrutinio general y acta de sesión de la JEP de Toledo y de Cantabria (art. 108.1). Identificar qué mesas difieren requiere el acta de esas mesas o un fichero alternativo por mesa.
 - **Reproducción:** ver [README](README.md#reproducción).
+- **Decisión del responsable (18/10/2026):** aparcado por impacto nulo en escaños. No se envía solicitud de actas para este hallazgo. Queda preparado un borrador, fuera del repositorio, por si el proyecto decide verificar una muestra aleatoria de actas.
 
 ### H-002 — Votantes del Senado por mesa incoherentes con el Congreso
 
