@@ -62,7 +62,7 @@ Es la única comprobación que falta entre la papeleta y el BOE. Las papeletas s
 ## Sorteo reproducible
 
 1. Este protocolo se integra en `main` mediante un PR.
-2. La semilla es `SHA-256("elecciones_es-muestreo-actas-v1|<SHA-256 Congreso>|<SHA-256 Senado>|<SHA-1 del commit de fusión de ese PR>")`. Nadie conoce el commit de fusión antes de fusionar, y después es público e inmutable. Para que nadie pueda rehacer la fusión hasta dar con una semilla conveniente, vale solo el **primer** commit de `main` que contiene este fichero (`git log --diff-filter=A --format=%H -- docs/auditoria/MUESTREO_ACTAS.md`, en su forma de commit de fusión), y el historial de `main` no se reescribe.
+2. La semilla es `SHA-256("elecciones_es-muestreo-actas-v1|<SHA-256 Congreso>|<SHA-256 Senado>|<SHA-1 del commit de fusión de ese PR>")`. Nadie conoce el commit de fusión antes de fusionar, y después es público e inmutable. Para que nadie pueda rehacer la fusión hasta dar con una semilla conveniente, vale solo el commit de `main` que incorpora este fichero, obtenido con `git log --first-parent --diff-filter=A --format=%H main -- docs/auditoria/MUESTREO_ACTAS.md`. El PR se fusiona con commit de fusión o squash, nunca con fast-forward ni rebase, para que ese commit no exista antes de fusionar. El historial de `main` no se reescribe.
 3. Cualquiera puede repetir el sorteo:
 
 ```bash
