@@ -12,6 +12,7 @@ Este documento no contiene conclusiones sobre fraude ni sobre ausencia de fraude
 | [VOTO_POR_CORREO.md](VOTO_POR_CORREO.md) | Matriz solicitado / aceptado / depositado / entregado / admitido / escrutado, sin mezclar unidades |
 | [ACTAS.md](ACTAS.md) | Cadena documental de las actas según la LOREG vigente el 23J y procedimiento de verificación |
 | [HALLAZGOS_Y_FALSOS_POSITIVOS.md](HALLAZGOS_Y_FALSOS_POSITIVOS.md) | Criterios de revisión humana, clasificación, trampas conocidas y hallazgos detectados |
+| [MUESTREO_ACTAS.md](MUESTREO_ACTAS.md) | Protocolo preregistrado de muestreo aleatorio de actas de mesa, con sorteo reproducible ([muestreo/sortear_actas.py](muestreo/sortear_actas.py)) |
 | [evidencia/manifest_2026-10-18.csv](evidencia/manifest_2026-10-18.csv) | URL, fecha, bytes y SHA-256 de cada original consultado |
 | [reproduccion/verificar_23j.py](reproduccion/verificar_23j.py) | Script del auditor (solo biblioteca estándar) que reproduce los controles de este informe |
 
