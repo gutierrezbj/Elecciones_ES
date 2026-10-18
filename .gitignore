@@ -1,0 +1,11 @@
+# Descargas y datos potencialmente voluminosos
+data/raw/
+data/interim/
+data/processed/
+*.parquet
+*.duckdb
+.env
+.venv/
+__pycache__/
+.pytest_cache/
+.DS_Store
