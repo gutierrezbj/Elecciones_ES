@@ -1,0 +1,6 @@
+id,organismo,url,tipo,eleccion,nivel_geografico,estado,notas
+interior_catalog,Ministerio del Interior,https://datos.gob.es/es/catalogo/e00003801-resultados-electorales,catalogo,23J 2023,por verificar,pendiente_validacion,Resolver recurso directo y licencia
+boe_2023,BOE,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-18907,resultados_definitivos,23J 2023,por verificar,pendiente_validacion,Inspeccionar desglose real
+ine,INE,https://www.ine.es/,estadisticas_voto_correo,23J 2023,por verificar,pendiente_validacion,Localizar tablas exactas y desgloses
+jec,Junta Electoral Central,https://www.juntaelectoralcentral.es/,actas_y_doctrina,23J 2023,por verificar,pendiente_validacion,Determinar acceso documental
+correos,Correos,https://www.correos.es/,estadisticas_y_procedimiento,23J 2023,por verificar,pendiente_validacion,Buscar cifras agregadas publicadas
