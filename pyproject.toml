@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "elecciones-es"
+version = "0.1.0"
+description = "Ingesta trazable de fuentes oficiales del 23J"
+requires-python = ">=3.12"
+dependencies = ["pyarrow==26.0.0"]
+
+[project.optional-dependencies]
+test = ["pytest==9.1.1"]
+
+[project.scripts]
+elecciones = "elecciones.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["elecciones*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
