@@ -49,6 +49,16 @@ Códigos especiales que no son mesas:
 - Provincia `99` = total autonómico o nacional del CERA. CA `99` = total nacional del CERA.
 - En el Senado, el CERA de Baleares, Las Palmas y Santa Cruz de Tenerife viene por isla (distrito 1-7) **y** por provincia (distrito 09).
 
+## Fuentes añadidas por el PR #5 (Codex) y comprobadas por el auditor
+
+| Fuente | URL | Comprobación del auditor (18/10/2026) |
+|---|---|---|
+| Nota de Correos, 22/07/2023 | https://www.correos.com/ca/sala-prensa/exito-en-la-gestion-del-voto-por-correo-que-marca-record-historico-con-2-471-935-votos-admitidos-para-las-elecciones-generales/ | HTTP 200; contiene 2.471.935 votos admitidos y 2.622.808 solicitudes admitidas |
+| INE 59763, voto por correo por fecha de recepción | https://www.ine.es/jaxiPx/files/tpx/es/csv_bdsc/59763.csv | HTTP 200; total 2.604.386 |
+| INE 59766, voto por correo por provincia de inscripción y remisión | https://www.ine.es/jaxiPx/files/tpx/es/csv_bdsc/59766.csv | HTTP 200; total 2.604.386 |
+| INE 59781, municipios y mesas | https://www.ine.es/jaxiPx/files/tpx/es/csv_bdsc/59781.csv | Usada en el PR #5 como denominador; 8.131 municipios y 60.314 mesas coinciden con Interior |
+| Aviso legal de infoelectoral | https://infoelectoral.interior.gob.es/es/aviso-legal/ | No revisado por el auditor; el PR #5 lo resume como reutilización con atribución |
+
 ## Propuesta de columnas para `data/sources/catalog.csv`
 
 ```
