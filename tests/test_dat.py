@@ -23,10 +23,10 @@ def test_senate_candidate_code_without_names(zip_factory):
     assert not any('name' in k for row in r for k in row)
 
 
-def test_provisional_flag_remains_provisional(zip_factory):
+def test_nonofficial_flag_is_not_assumed_provisional(zip_factory):
     t,r,p,n=read_dat(zip_factory(official='N'),source(),'42')
-    assert t[0]['scrutiny_type']=='provisional'
-    assert list(r)[0]['scrutiny_type']=='provisional'
+    assert t[0]['scrutiny_type']=='unknown'
+    assert list(r)[0]['scrutiny_type']=='unknown'
 
 
 @pytest.mark.parametrize('option',['duplicate','orphan','malformed'])
@@ -52,5 +52,24 @@ def test_island_cera_rollup_not_double_counted(zip_factory):
         for n,v in data.items():z.writestr(n,v)
     t,r,published,notes=read_dat(p,source('senate'),'42')
     assert len(t)==2 and len(notes)==1
-    assert notes[0]['rule']=='excluded_cera_constituency_rollup'
+    assert notes[0]['rule']=='excluded_cera_rollup'
     assert len(list(r))==2
+
+
+def test_senate_islands_preserve_cera_and_constituencies(tmp_path):
+    from conftest import make_islands_zip
+    t,results,published,notes=read_dat(make_islands_zip(tmp_path/'islands.zip'),source('senate'),'35')
+    results=list(results)
+    assert len(t)==6 and len(results)==6 and len(published)==4
+    assert {r['district_code'] for r in t if r['geography_level']=='cera'}=={'01','02','03'}
+    assert all(r['candidate_code'][2]==r['constituency_code'] for r in results)
+    assert sum(r['candidacy_ballots'] for r in t)==180
+    assert len(notes)==1
+    assert {r['constituency_code'] for r in published}=={'9','1','2','3'}
+    assert validate(t,results)==[]
+
+
+def test_insular_mapping_is_required_not_guessed(tmp_path):
+    from conftest import make_islands_zip
+    with pytest.raises(ValueError,match='No se puede asignar'):
+        read_dat(make_islands_zip(tmp_path/'islands.zip',missing_map=True),source('senate'),'35')

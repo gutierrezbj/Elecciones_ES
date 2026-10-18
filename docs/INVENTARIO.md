@@ -4,7 +4,7 @@ El catálogo [catalog.csv](../data/sources/catalog.csv) sustituye los puntos de 
 
 | Recurso | Disponibilidad comprobada y alcance |
 |---|---|
-| Interior, ZIP 02202307_MESA | HTTPS 200; DAT y formato Word incluidos. Congreso: mesa y CERA, agregados municipales y superiores. El pipeline interpreta 02, 07, 09 y 10; flags oficiales S |
+| Interior, ZIP 02202307_MESA | HTTPS 200; DAT y formato Word incluidos. Congreso: mesa y CERA, agregados municipales y superiores. El pipeline interpreta 02, 07, 09 y 10; v2 usa además 05 para asignar circunscripciones insulares del Senado; flags oficiales S |
 | Interior, ZIP 03202307_MESA | HTTPS 200; mismo esquema; 10 contiene códigos de **candidato** al Senado. Incluye CERA insular y rollups que hay que excluir del total provincial |
 | INE, tabla 59781 CSV | HTTPS 200; denominadores del proceso: 8.131 municipios y 60.314 mesas. Totales provinciales sin IDs individuales |
 | BOE-A-2023-18907 XML | HTTPS 200; resolución publicada 01/09/2023. Resultados de escrutinio general por circunscripción; algunas tablas son imágenes. No son actas de mesa |

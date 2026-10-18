@@ -65,3 +65,25 @@ def test_individual_senate_candidate_limit_and_orphan(total,result):
     r=dict(result,election_type='senate',candidate_code='429001',candidacy_key=None,candidacy_code=None,votes=56)
     assert 'candidate_votes_exceed_ballots' in rules([t],[r])
     assert 'orphan_result' in rules([total],[dict(result,municipality_code='002')])
+
+
+@pytest.mark.parametrize('province,district,limit',[('42','9',3),('51','9',2),('52','9',2),('07','1',2),('07','2',1),('07','3',1),('35','1',2),('35','2',1),('35','3',1),('38','4',2),('38','5',1),('38','6',1),('38','7',1)])
+def test_senate_selection_limits_are_constituency_specific(province,district,limit):
+    from elecciones.validation import senate_max_marks
+    assert senate_max_marks(province,district)==limit
+
+
+def test_sum_of_senate_marks_can_exceed_capacity_without_individual_excess(total,result):
+    t=dict(total,election_type='senate',candidacy_ballots=55)
+    candidates=[dict(result,election_type='senate',candidacy_key=None,candidacy_code=None,candidate_code=str(i).zfill(6),votes=42) for i in range(4)]
+    seen=rules([t],candidates)
+    assert 'candidate_votes_exceed_ballots' not in seen
+    assert 'senate_marks_exceed_capacity' in seen
+    # Three marks per ballot are permitted; crossing the bound by one is flagged.
+    candidates[-1]['votes']=39
+    assert 'senate_marks_exceed_capacity' not in rules([t],candidates)
+
+
+def test_derived_identities_are_not_claimed_as_independent_checks(total,result):
+    t=dict(total,derived_counts='valid_votes,voters',voters=59)
+    assert 'valid_plus_null' not in rules([t],[result])

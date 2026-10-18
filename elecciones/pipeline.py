@@ -8,7 +8,7 @@ import xml.etree.ElementTree as ET
 import pyarrow as pa
 import pyarrow.parquet as pq
 from .download import now, verified_inputs, digest
-from .dat import read_dat
+from .dat import read_dat, INSULAR_DISTRICTS
 from .ingest import read_denominators
 from .validation import validate, coverage, finding, compare_totals, TOTAL_FIELDS
 
@@ -50,13 +50,25 @@ def persist_results(rows, path, stats):
             writer.close()
 
 
-def run(catalog, manifest, raw_dir, output, province=None):
+def run(catalog, manifest, raw_dir, output, province=None, *, checksums=None, allow_unpinned=False):
     from .cli import read_catalog
     sources = read_catalog(catalog)
     inputs = verified_inputs(manifest, raw_dir)
     required = ['interior_congress_mesa', 'interior_senate_mesa', 'ine_geography_23j']
     if any(s not in inputs for s in required):
         raise ValueError('Se requieren ZIP Congreso/Senado y denominadores INE verificados')
+    pins_path = Path(checksums) if checksums else Path(catalog).parent / 'checksums.json'
+    try:
+        pins = json.loads(pins_path.read_text(encoding='utf-8'))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ValueError(f'No se puede leer el fichero de pines: {pins_path}') from exc
+    pin_mismatches = {s: {'expected': pins.get(s), 'observed': inputs[s][1]['sha256']}
+                      for s in required if pins.get(s) != inputs[s][1]['sha256']}
+    if pin_mismatches and not allow_unpinned:
+        raise ValueError('Los inputs no coinciden con los SHA-256 fijados: ' + ', '.join(pin_mismatches))
+    if pin_mismatches:
+        import logging
+        logging.warning('EXPLORACIÓN SIN PIN: %s', ', '.join(pin_mismatches))
     if province is not None and province not in {str(i).zfill(2) for i in range(1, 53)}:
         raise ValueError('Provincia debe ser código de dos dígitos 01..52')
     out = Path(output)
@@ -66,6 +78,8 @@ def run(catalog, manifest, raw_dir, output, province=None):
     # Crear salidas solo después de verificar todos los hashes y el denominador.
     out.mkdir(parents=True, exist_ok=True)
     findings, coverage_rows, reconciliation, notes, provenance = [], [], [], [], {}
+    constituency_reconciliation = []
+    chamber_totals = {}
     stats = Counter()
     expected_provinces = [province] if province else [str(i).zfill(2) for i in range(1, 53)]
     try:
@@ -83,15 +97,18 @@ def run(catalog, manifest, raw_dir, output, province=None):
                 from hashlib import sha256
                 provenance[source_id] = {'format_document': 'FICHEROS.doc',
                     'format_document_sha256': sha256(archive.read('FICHEROS.doc')).hexdigest()}
-            provincial_counts = Counter(p['province_code'] for p in published)
+            chamber_totals[chamber] = totals
+            provincial = [p for p in published if p['geography_level'] == 'province']
+            provincial_counts = Counter(p['province_code'] for p in provincial)
             if set(provincial_counts) != set(expected_provinces) or any(n != 1 for n in provincial_counts.values()):
                 raise ValueError('Cobertura provincial incompleta o duplicada en 07')
-            for p in published:
+            for p in provincial:
                 code = p['province_code']
                 physical = [r for r in totals if r['province_code'] == code and r['geography_level'] == 'table']
                 cera = [r for r in totals if r['province_code'] == code and r['geography_level'] == 'cera']
-                if len(cera) != 1:
-                    raise ValueError(f'{chamber} {code}: se requiere un agregado CERA provincial 09')
+                expected_cera = INSULAR_DISTRICTS[code] if chamber == 'senate' and code in INSULAR_DISTRICTS else {'9'}
+                if len(cera) != len(expected_cera) or {r['constituency_code'] for r in cera} != expected_cera:
+                    raise ValueError(f'{chamber} {code}: CERA por circunscripción incompleto o duplicado')
                 # INE y DAT usan las mismas denominaciones salvo acentos/mayúsculas.
                 import unicodedata
                 def normalized(name):
@@ -129,11 +146,46 @@ def run(catalog, manifest, raw_dir, output, province=None):
                     scrutiny_type=p['scrutiny_type'], physical_tables=len(physical), cera_records=len(cera),
                     derived={f: derived[f] for f in TOTAL_FIELDS}, published={f: p[f] for f in TOTAL_FIELDS},
                     published_source_locators=p['source_locators'], discrepancies=len(discrepancies)))
+            for p in published:
+                if p['geography_level'] != 'constituency':
+                    continue
+                selected = [r for r in totals if r['province_code'] == p['province_code'] and r['constituency_code'] == p['constituency_code']]
+                if not selected or any(r['scrutiny_type'] != p['scrutiny_type'] for r in selected):
+                    raise ValueError('Circunscripción insular ausente o escrutinio incompatible')
+                derived = dict(p)
+                for field in TOTAL_FIELDS:
+                    derived[field] = sum(r[field] for r in selected)
+                differences = compare_totals(derived, p)
+                for f in differences:
+                    f.update(province_code=p['province_code'], constituency_code=p['constituency_code'], election_type=chamber, evidence_ids=[source_id, *p['source_locators']])
+                findings.extend(differences)
+                constituency_reconciliation.append(dict(province_code=p['province_code'], constituency_code=p['constituency_code'], election_type=chamber,
+                    derived={f: derived[f] for f in TOTAL_FIELDS}, published={f: p[f] for f in TOTAL_FIELDS},
+                    published_source_locators=p['source_locators'], discrepancies=len(differences)))
+        # Es una comparación descriptiva entre cámaras, no igualdad exigible por ley.
+        def physical_index(rows):
+            return {tuple(r[f] for f in ('province_code','municipality_code','district_code','section_code','table_code')): r for r in rows if r['geography_level'] == 'table'}
+        congress = physical_index(chamber_totals['congress'])
+        senate = physical_index(chamber_totals['senate'])
+        chamber_diagnostics = []
+        for geo in sorted(congress.keys() & senate.keys()):
+            c, s = congress[geo], senate[geo]
+            if c['scrutiny_type'] != s['scrutiny_type']:
+                raise ValueError('Escrutinios distintos en diagnóstico entre cámaras')
+            delta = s['voters'] - c['voters']
+            if abs(delta) > 50:
+                chamber_diagnostics.append(dict(geography_key=list(geo), congress_voters=c['voters'], senate_voters=s['voters'], difference=delta,
+                    source_ids=[c['source_id'], s['source_id']], source_locators=c['source_locators'] + s['source_locators'],
+                    threshold=50, status='awaiting_evidence', classification='descriptive_not_legal_violation'))
         from hashlib import sha256
         for f in findings:
             f['id'] = 'finding:' + sha256(json.dumps(f, sort_keys=True, ensure_ascii=False).encode()).hexdigest()[:20]
         report = dict(status='completed_with_findings' if findings else 'completed', generated_at=now(), province=province, election_date='2023-07-23',
-            transformation_version='interior-dat-v1', catalog_sha256=digest(catalog), manifest_sha256=digest(manifest),
+            transformation_version='interior-dat-v2',
+            pin_verification=dict(checksums_sha256=digest(pins_path), matched=not bool(pin_mismatches), allow_unpinned=allow_unpinned, mismatches=pin_mismatches),
+            structural_identities=['valid_plus_null', 'candidacy_plus_blank'],
+            constituency_reconciliation=constituency_reconciliation,
+            chamber_diagnostics=chamber_diagnostics, chamber_diagnostics_count=len(chamber_diagnostics), catalog_sha256=digest(catalog), manifest_sha256=digest(manifest),
             source_inputs={s: {k: v for k, v in inputs[s][1].items() if k in ('source_id', 'sha256', 'retrieved_at', 'url', 'bytes', 'path')} for s in required},
             format_provenance=provenance, rows=dict(stats), coverage=coverage_rows,
             reconciliation=reconciliation, findings=findings, finding_counts=dict(Counter(f['rule'] for f in findings)),

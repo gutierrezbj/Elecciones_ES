@@ -29,7 +29,7 @@ Para exigir un hash en una descarga individual:
 python -m elecciones.cli download interior_congress_mesa --expected-sha256 e78fc231326a03cf67bbec87b7100ea0c8c46859daa1b2a631c06daaaf1717f8
 ```
 
-La CLI usa catálogo CSV configurable (`--catalog` antes del subcomando). `--raw-dir`, `--manifest`, `--timeout` y `--attempts` están documentados en `--help`. Timeout limita operaciones de socket y duración del streaming, no es un planificador de tareas. Hay 1–5 intentos, pausas exponenciales acotadas, límite de 256 MiB, comprobación de Content-Length si existe y log por intento. No se desactiva TLS ni se emplea la autenticación embebida de la API del sitio.
+La CLI usa catálogo CSV configurable (`--catalog` antes del subcomando). `--raw-dir`, `--manifest`, `--timeout`, `--max-seconds` y `--attempts` están documentados en `--help`. `--timeout` limita cada operación de socket; `--max-seconds` es el límite total de un intento (300 s por defecto). No es un planificador de tareas. Hay 1–5 intentos, pausas exponenciales acotadas, límite de 256 MiB, comprobación de Content-Length si existe y log por intento. No se desactiva TLS ni se emplea la autenticación embebida de la API del sitio.
 
 Salidas CLI: 0 = descarga/verificación correcta o pipeline sin observaciones; 1 = descarga fallida/hash distinto o pipeline completado con observaciones; 2 = entrada inválida o error de integridad/formato. En particular, un pipeline nacional con salida 1 puede tener un informe completo y útil. Una excepción después de abrir las salidas deja `FAILED.json`, sin informe completo. Una verificación de inputs fallida no abre el directorio de salida.
 
@@ -46,3 +46,17 @@ Salidas CLI: 0 = descarga/verificación correcta o pipeline sin observaciones; 1
 ## Comprobar una observación
 
 Buscar su `source_id` en el manifest y el catálogo; verificar el SHA-256; abrir exclusivamente los miembros y líneas de `source_locators`. Los ficheros son de ancho fijo: usar las posiciones de [ESQUEMA.md](ESQUEMA.md), conservando ceros iniciales y el espacio de sección. En conciliaciones provinciales, `published_source_locators` señala la fila 07; las filas 09 de la provincia y su CERA permiten reconstruir la suma. El informe no cambia datos ni adjudica explicaciones sin evidencia documental.
+
+## Verificación offline y pines en la CLI
+
+Para repetir el procesamiento sin efectuar nuevas peticiones de red:
+
+```sh
+python -m scripts.reproduce --offline-manifest data/downloads/reproduction-20261018.jsonl --output work/reproduction-offline-02
+```
+
+Este modo exige que los originales ya estén presentes en `data/raw/`. Copia los recibos originales sin cambiar fechas, estados ni metadatos HTTP; no representa una descarga nueva. Se vuelven a verificar integridad y pines antes de generar salidas.
+
+`pipeline` comprueba siempre `data/sources/checksums.json` (por defecto, junto al catálogo). `--checksums ruta.json` permite usar otro conjunto de referencia. Un hash no coincidente o ausente detiene el procesamiento antes de abrir salidas. Para exploración deliberada puede usarse `--allow-unpinned`: el informe registra la excepción, y no se debe presentar como reproducción fijada.
+
+Los informes v1 originales se conservan; [la revisión v2](../reports/v2/README.md) documenta los nuevos controles y cambios de esquema, sin reescribir observaciones históricas.

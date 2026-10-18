@@ -85,3 +85,13 @@ def test_interrupted_stream_is_logged_and_retried(tmp_path):
     assert r['status']=='failed' and r['attempt']==2
     assert len((tmp_path/'m').read_text().splitlines())==2
     assert not list((tmp_path/'raw').iterdir())
+
+
+def test_live_socket_may_exceed_socket_timeout_but_not_total_deadline(tmp_path,monkeypatch):
+    from elecciones import download
+    times=iter([0,25]);monkeypatch.setattr(download.time,'monotonic',lambda:next(times))
+    r=fetch(SOURCE,tmp_path/'raw',tmp_path/'m',timeout=2,max_seconds=30,opener=lambda *a,**kw:Response())
+    assert r['status']=='ok' and r['socket_timeout_seconds']==2 and r['max_seconds']==30
+    times=iter([0,31]);monkeypatch.setattr(download.time,'monotonic',lambda:next(times))
+    r=fetch(SOURCE,tmp_path/'raw',tmp_path/'m2',timeout=2,max_seconds=30,attempts=1,opener=lambda *a,**kw:Response())
+    assert r['status']=='failed' and 'Tiempo total' in r['error']

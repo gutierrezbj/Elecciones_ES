@@ -35,18 +35,18 @@ def append_manifest(path, record):
 
 
 def fetch(source, raw_dir, manifest, *, timeout=20, attempts=3,
-          expected_sha256=None, max_bytes=256 * 1024 * 1024, opener=urlopen,
+          expected_sha256=None, max_seconds=300, max_bytes=256 * 1024 * 1024, opener=urlopen,
           sleep=time.sleep):
     """No cache silenciosa: cada invocación registra cada intento HTTP.
 
-    timeout limita cada operación de socket y la duración total del streaming.
+    timeout limita cada operación de socket; max_seconds la duración total del intento.
     El hash esperado es opcional y su procedencia la fija quien invoca la CLI.
     """
     if not re.fullmatch(r'[a-z0-9_-]+', source['id']):
         raise ValueError('source_id inválido')
     if urlparse(source['url']).scheme not in {'https', 'http'}:
         raise ValueError('Solo se admiten URLs HTTP(S)')
-    if timeout <= 0 or not 1 <= attempts <= 5 or max_bytes <= 0:
+    if timeout <= 0 or max_seconds <= 0 or not 1 <= attempts <= 5 or max_bytes <= 0:
         raise ValueError('timeout/max_bytes positivos; attempts entre 1 y 5')
     if expected_sha256 and not re.fullmatch('[0-9a-f]{64}', expected_sha256):
         raise ValueError('SHA-256 esperado inválido')
@@ -56,7 +56,7 @@ def fetch(source, raw_dir, manifest, *, timeout=20, attempts=3,
         record = dict(source_id=source['id'], url=source['url'], retrieved_at=now(),
                       attempt=attempt, http_status=None, bytes=0, sha256=None,
                       path=None, status='failed', error=None, final_url=None,
-                      expected_sha256=expected_sha256)
+                      expected_sha256=expected_sha256, socket_timeout_seconds=timeout, max_seconds=max_seconds)
         temporary = None
         retry = False
         started = time.monotonic()
@@ -76,7 +76,7 @@ def fetch(source, raw_dir, manifest, *, timeout=20, attempts=3,
                         record['bytes'] += len(chunk)
                         if record['bytes'] > max_bytes:
                             raise ValueError('Límite de tamaño superado')
-                        if time.monotonic() - started > timeout:
+                        if time.monotonic() - started > max_seconds:
                             raise TimeoutError('Tiempo total de descarga agotado')
                         stream.write(chunk)
                         h.update(chunk)

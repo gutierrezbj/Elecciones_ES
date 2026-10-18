@@ -4,7 +4,7 @@ import re
 
 KEY = ('election_date', 'election_type', 'scrutiny_type', 'geography_level',
        'province_code', 'municipality_code', 'district_code', 'section_code',
-       'table_code', 'population_scope')
+       'table_code', 'population_scope', 'constituency_code')
 TOTAL_FIELDS = ('electors', 'voters', 'valid_votes', 'blank_votes', 'null_votes', 'candidacy_ballots')
 
 
@@ -15,6 +15,18 @@ def key(row):
 def finding(rule, observed=None, expected=None, **kwargs):
     return dict(rule=rule, observed=observed, expected=expected,
                 status='detected', severity='technical_review', reviewer=None, **kwargs)
+
+
+def senate_max_marks(province, constituency=None):
+    # Art. 96.3 LOREG: límites de selección, no inferencia de nulidad concreta.
+    if province in {'51', '52'}:
+        return 2
+    if province in {'07', '35', '38'}:
+        from .dat import INSULAR_DISTRICTS
+        if constituency not in INSULAR_DISTRICTS[province]:
+            raise ValueError('Límite de marcas requiere circunscripción insular conocida')
+        return 2 if (province, constituency) in {('07', '1'), ('35', '1'), ('38', '4')} else 1
+    return 3
 
 
 def validate(totals, results):
@@ -55,11 +67,17 @@ def validate(totals, results):
                 ('valid_plus_null', r['valid_votes'] + r['null_votes'], r['voters']),
                 ('candidacy_plus_blank', r['candidacy_ballots'] + r['blank_votes'], r['valid_votes']),
             ]:
-                if actual != expected:
+                if not r.get('derived_counts') and actual != expected:
                     findings.append(finding(rule, actual, expected, **context))
             if r['voters'] > r['electors']:
                 findings.append(finding('voters_exceed_electors', r['voters'], r['electors'], **context))
+            if r['election_type'] == 'senate':
+                maximum = senate_max_marks(r['province_code'], r.get('constituency_code'))
+                capacity = maximum * r['candidacy_ballots']
+                if result_sums[key(r)] > capacity:
+                    findings.append(finding('senate_marks_exceed_capacity', result_sums[key(r)], capacity, max_marks=maximum, ballots=r['candidacy_ballots'], legal_reference='LOREG art. 96.3', **context))
             # Senado: marcas por candidato no son papeletas. No sumar como Congreso.
+
             if r['election_type'] == 'congress' and result_sums[key(r)] != r['candidacy_ballots']:
                 findings.append(finding('candidacy_sum', result_sums[key(r)], r['candidacy_ballots'], **context))
     return findings

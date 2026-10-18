@@ -32,7 +32,7 @@ Auditar todas las mesas con datos disponibles, sin excluir municipios por tamañ
 7. Informe reproducible de hallazgos y limitaciones.
 
 ## Estado
-**Hito 1 ejecutable.** Ingesta oficial DAT de Congreso y Senado, primero Soria (42), después cobertura nacional; SHA-256, Parquet, pruebas sintéticas y observaciones técnicas pendientes de revisión. Ver [informe de ejecución](reports/README.md), [inventario comprobado](docs/INVENTARIO.md), [esquema](docs/ESQUEMA.md) y [reproducción](docs/REPRODUCIR.md). Las observaciones no establecen causas ni conclusiones sobre fraude.
+**Hito 1 ejecutable.** Ingesta oficial DAT de Congreso y Senado, primero Soria (42), después cobertura nacional; SHA-256, Parquet, pruebas sintéticas y observaciones técnicas pendientes de revisión. Ver [informe actualizado v2](reports/v2/README.md), [inventario comprobado](docs/INVENTARIO.md), [esquema](docs/ESQUEMA.md) y [reproducción](docs/REPRODUCIR.md). Las observaciones no establecen causas ni conclusiones sobre fraude.
 
 ## Colaboración con agentes
 Leer [AGENTS.md](AGENTS.md), [CLAUDE.md](CLAUDE.md) y [docs/PLAN.md](docs/PLAN.md). Trabajar por ramas y pull requests, sin modificar datos originales.
