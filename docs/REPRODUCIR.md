@@ -6,7 +6,7 @@ Requiere Python 3.12 o posterior y conexión HTTPS para adquirir las fuentes. De
 python3 -m venv .venv
 . .venv/bin/activate
 python -m pip install -e '.[test]'
-python scripts/reproduce.py --output work/reproduction-01
+python -m scripts.reproduce --output work/reproduction-01
 ```
 
 El script ejecuta las pruebas sin red, descarga los tres recursos fijados en `data/sources/checksums.json`, exige sus hashes, verifica los originales, ejecuta Soria (42) y solo después amplía a nivel nacional. No sobrescribe ejecuciones previas. Un hash nuevo requiere revisar la nueva versión, no actualizar automáticamente el pin. Los valores fijados son observaciones de esta recuperación, no firmas ni hashes publicados por el organismo.

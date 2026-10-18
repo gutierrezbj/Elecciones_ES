@@ -16,3 +16,4 @@ jobs:
           cache: pip
       - run: python -m pip install -e '.[test]'
       - run: python -m pytest -q
+      - run: python -m scripts.reproduce --help
