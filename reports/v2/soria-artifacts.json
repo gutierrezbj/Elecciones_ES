@@ -1,0 +1,9 @@
+{
+  "congress-published.parquet": "ca6e3b89e360c6ce443702c54d2fd68de9fc14dd08fd03093e488b85168181a2",
+  "congress-results.parquet": "f75dd5b8b1431fff49f00b2925f559fd3bf0a54e74c7878473c85d85180271c3",
+  "congress-totals.parquet": "f8cb8b6162b5841615af1b47226f5257f275204bbc239177d868346c21d1a7bf",
+  "report.json": "d8008b48089a7a2a53028b2cb2f9c937b4500ec773e444d412c7e2a8a1fdf239",
+  "senate-published.parquet": "5c2f06b1c26ab0f071b85e31a2fd378f8d5d4eb103e52574f1ed3bb52f2c932c",
+  "senate-results.parquet": "3a858240666f02775d4029288207a5a98bea706233ac5e99fd0bcc106d60f2d6",
+  "senate-totals.parquet": "c0ed5bae9481eabf301d6f84819814e16e34f41759f0016c9d2ae08a0cd8a4e6"
+}
