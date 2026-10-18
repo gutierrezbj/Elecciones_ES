@@ -95,9 +95,27 @@ Desglose de Toledo por candidatura (fichero 10 frente a fichero 08 = BOE): FO �
 
   Las mesas con diferencia > 50 se concentran en Barcelona (108), Madrid (83), Sevilla (60) y Valencia (31). Ejemplo: mesa 28-079-15-177-A, Congreso 354 votantes, Senado 631, con censo de 483. Aun así, la suma de mesas del Senado coincide con el agregado provincial de Interior en las 52 provincias.
 - **Lo esperable:** diferencias pequeñas, porque un elector puede no depositar uno de los dos sobres. No lo son diferencias de cientos.
-- **Hipótesis:** error de transcripción del acta del Senado (por ejemplo, anotar votos por candidato en lugar de papeletas en "votos a candidaturas"), o error de carga. El cuadre provincial sugiere que el agregado se construyó desde estos mismos registros, así que no sirve para descartar ninguna de las dos.
-- **Lo que no se puede decir:** que haya votos de más en el Senado. El dato por mesa no es fiable para calcular participación.
-- **Evidencia necesaria:** acta de sesión del Senado de una muestra de esas mesas.
+- **Dónde está el error.** Se ha cruzado el campo de papeletas del Senado (fichero 09, "votos a candidaturas") con la suma de votos por candidato (fichero 10):
+  - En las 468 mesas con Senado mayor, los votos a candidatos guardan con los votantes del Congreso la proporción normal: mediana de 2,81 votos por votante, frente a 2,80 en el conjunto de mesas provinciales. Lo que está inflado es el campo de papeletas (o blancos y nulos), no los votos a candidatos.
+  - En 388 mesas peninsulares la suma de votos a candidatos supera el máximo legal de 3 por papeleta (2 en Ceuta y Melilla, art. 96.3). Ahí el campo de papeletas es demasiado bajo. Ejemplo: mesa 11-008-01-010-A, 385 papeletas y 1.548 votos a candidatos (máximo posible 1.155).
+  - En las 128 mesas con Senado menor la proporción es más baja (mediana de 2,18). No se ha determinado si faltan papeletas o votos a candidatos.
+  - Los votos por candidato, que son los que deciden escaños, cuadran exactos con el BOE en los 1.152 candidatos (ver más abajo).
+- **Hipótesis:** error al anotar en el acta del Senado los totales de papeletas, blancos o nulos, o error al transcribirlos. El cuadre provincial no permite elegir entre las dos, porque el agregado de Interior parece construido desde estos mismos registros.
+- **Lo que no se puede decir:** que haya votos de más en el Senado ni que afecte a los escaños. El campo de papeletas por mesa no es fiable; los votos por candidato sí son coherentes con el resultado oficial.
+- **Evidencia necesaria:** acta de sesión del Senado de una muestra de esas mesas, para ver si el error ya está en el acta o aparece al transcribirla.
+
+## Controles superados
+
+| Control | Ámbito | Resultado |
+|---|---|---|
+| Claves de mesa únicas | 60.314 mesas por cámara | 0 duplicados |
+| Fichero 09 tiene su desglose en el 10 y al revés | Ambas cámaras | 0 registros huérfanos |
+| Suma de candidaturas (10) = votos a candidaturas (09) | Congreso, 60.386 registros | 0 diferencias |
+| Suma de mesas (09) = municipio (05) | 8.131 municipios, ambas cámaras | 0 diferencias |
+| Suma de mesas + CERA = circunscripción (07) | Senado, 52 provincias | 0 diferencias |
+| Circunscripción (07) = BOE Cuadro I | Congreso, 52 provincias | 0 diferencias |
+| Votos por candidato (08) = BOE | Senado, 1.152 candidatos en 59 circunscripciones | 1 diferencia: el candidato de Madrid con la errata "1.007.32" que corrige el BOE-A-2023-19537; Interior tiene ya la cifra corregida, 1.007.322 |
+| Reproducibilidad de descarga | 9 originales del manifest | Mismo SHA-256 en una segunda descarga el 18/10/2026 |
 
 ## Pista pendiente: Indra y resultados de mesa
 

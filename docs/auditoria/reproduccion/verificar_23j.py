@@ -162,6 +162,52 @@ def main():
             if a.boe_txt:
                 provincial_vs_boe(oficial, a.boe_txt)
     senado_vs_congreso(a.congreso, a.senado)
+    candidaturas_vs_globales(a.congreso, "02")
+    papeletas_senado(a.senado)
+    if a.boe_txt:
+        senado_candidatos_vs_boe(a.senado, a.boe_txt)
+
+
+def candidaturas_vs_globales(d, tipo):
+    globales = {r[9:23]: n(r, 80, 86) for r in leer(d / f"09{tipo}2307.DAT")}
+    suma = collections.Counter()
+    for r in leer(d / f"10{tipo}2307.DAT"):
+        suma[r[9:23]] += int(r[29:37])
+    dif = sum(1 for k, v in globales.items() if suma.get(k) != v)
+    print(f"[{tipo}] suma de candidaturas (10) vs votos a candidaturas (09): {len(globales)} registros, {dif} con diferencias")
+
+
+def papeletas_senado(d):
+    votos = collections.Counter()
+    for r in leer(d / "10032307.DAT"):
+        if not es_cera(r):
+            votos[r[11:23]] += int(r[29:37])
+    imposibles = 0
+    for r in leer(d / "09032307.DAT"):
+        if es_cera(r) or r[11:13] in ("07", "35", "38"):
+            continue
+        maximo = 2 if r[11:13] in ("51", "52") else 3
+        papeletas = n(r, 80, 86)
+        if papeletas and votos[r[11:23]] > maximo * papeletas:
+            imposibles += 1
+    print(f"[03] mesas peninsulares con más votos a candidatos que el máximo legal por papeleta (art. 96.3): {imposibles}")
+
+
+def senado_candidatos_vs_boe(d, boe):
+    texto = Path(boe).read_text(encoding="utf-8")
+    texto = texto[texto.find("Relación de Senadores proclamados electos"):]
+    boe_votos = collections.Counter()
+    for l in texto.splitlines():
+        m = re.match(r"^\s*(Don|Doña)\s.*\s([\d.]+)\s*$", l)
+        if m:
+            boe_votos[int(m.group(2).replace(".", ""))] += 1
+    interior = collections.Counter()
+    for r in leer(d / "08032307.DAT"):
+        if r[11:13] == "99" or (r[13] == "9" and r[11:13] in ("07", "35", "38")):
+            continue
+        interior[int(r[20:28])] += 1
+    print(f"[03] votos por candidato BOE vs Interior: {sum(boe_votos.values())} y {sum(interior.values())} candidatos; "
+          f"solo BOE={sorted((boe_votos - interior).elements())} solo Interior={sorted((interior - boe_votos).elements())}")
 
 
 if __name__ == "__main__":
