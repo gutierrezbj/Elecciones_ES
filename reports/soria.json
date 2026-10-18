@@ -1,0 +1,197 @@
+{
+  "catalog_sha256": "527634d1157da0751eed78f9dd4519660587991b47b6d59626e923fdbc643989",
+  "code_dirty": false,
+  "code_revision": "33073c17cc19066c102188a27083d1e7a3164726",
+  "coverage": [
+    {
+      "covered": 183,
+      "denominator": 183,
+      "denominator_locator": "line:217",
+      "denominator_source_id": "ine_geography_23j",
+      "election_type": "congress",
+      "geography_level": "municipality",
+      "limitation": "Denominador agregado INE: no permite identificar IDs concretos ausentes; igualdad de cardinalidad no prueba igualdad de conjuntos.",
+      "missing": 0,
+      "missing_keys": null,
+      "observed": 183,
+      "province_code": "42",
+      "ratio": 1.0,
+      "scrutiny_type": "definitive",
+      "unexpected_keys": null
+    },
+    {
+      "covered": 256,
+      "denominator": 256,
+      "denominator_locator": "line:220",
+      "denominator_source_id": "ine_geography_23j",
+      "election_type": "congress",
+      "geography_level": "table",
+      "limitation": "Denominador agregado INE: no permite identificar IDs concretos ausentes; igualdad de cardinalidad no prueba igualdad de conjuntos.",
+      "missing": 0,
+      "missing_keys": null,
+      "observed": 256,
+      "province_code": "42",
+      "ratio": 1.0,
+      "scrutiny_type": "definitive",
+      "unexpected_keys": null
+    },
+    {
+      "covered": 183,
+      "denominator": 183,
+      "denominator_locator": "line:217",
+      "denominator_source_id": "ine_geography_23j",
+      "election_type": "senate",
+      "geography_level": "municipality",
+      "limitation": "Denominador agregado INE: no permite identificar IDs concretos ausentes; igualdad de cardinalidad no prueba igualdad de conjuntos.",
+      "missing": 0,
+      "missing_keys": null,
+      "observed": 183,
+      "province_code": "42",
+      "ratio": 1.0,
+      "scrutiny_type": "definitive",
+      "unexpected_keys": null
+    },
+    {
+      "covered": 256,
+      "denominator": 256,
+      "denominator_locator": "line:220",
+      "denominator_source_id": "ine_geography_23j",
+      "election_type": "senate",
+      "geography_level": "table",
+      "limitation": "Denominador agregado INE: no permite identificar IDs concretos ausentes; igualdad de cardinalidad no prueba igualdad de conjuntos.",
+      "missing": 0,
+      "missing_keys": null,
+      "observed": 256,
+      "province_code": "42",
+      "ratio": 1.0,
+      "scrutiny_type": "definitive",
+      "unexpected_keys": null
+    }
+  ],
+  "election_date": "2023-07-23",
+  "excluded_rollups": [],
+  "finding_counts": {},
+  "findings": [],
+  "format_provenance": {
+    "interior_congress_mesa": {
+      "format_document": "FICHEROS.doc",
+      "format_document_sha256": "b441f5f5f2f3d61943d17f27db8f190b9788cbd1fcaa3976853fb2d98a2d37a5"
+    },
+    "interior_senate_mesa": {
+      "format_document": "FICHEROS.doc",
+      "format_document_sha256": "b441f5f5f2f3d61943d17f27db8f190b9788cbd1fcaa3976853fb2d98a2d37a5"
+    }
+  },
+  "generated_at": "2026-10-18T11:03:40.571891+00:00",
+  "limitations": [
+    "Denominadores INE por provincia: se contrastan cardinalidades, no listas independientes de IDs de mesas o municipios. CERA excluido de ambos denominadores físicos.",
+    "09 no publica votantes ni votos válidos por separado: se derivan de candidaturas, blancos y nulos. Esas identidades son estructurales, no verificaciones independientes.",
+    "Datos oficiales S se clasifican definitive según la definición de FICHEROS.doc. No se ha adquirido la instantánea provisional de la noche electoral.",
+    "Conciliación solo entre 09 y 07 del mismo ZIP y escrutinio; no equivale a comprobación independiente con actas ni con BOE.",
+    "Senado: código de candidato, no partido; marcas no se suman como papeletas. No se leen ni exportan nombres personales del fichero 04.",
+    "El ZIP original incluye documentación de candidaturas; se conserva privado fuera de Git sin extraer esos ficheros.",
+    "No hay actas de mesa ni transcripciones ni conclusiones sobre voto por correo o fraude.",
+    "SHA-256 verifica los bytes recuperados; no es una firma electoral."
+  ],
+  "manifest_sha256": "6f3a6445a8769ace9fbc297d10eab2d36819a1f4c827d6e98fb679f0df9fc58e",
+  "national_denominators": {
+    "Mesas electorales": {
+      "source_locator": "line:5",
+      "value": 60314
+    },
+    "Municipios": {
+      "source_locator": "line:2",
+      "value": 8131
+    }
+  },
+  "province": "42",
+  "reconciliation": [
+    {
+      "cera_records": 1,
+      "derived": {
+        "blank_votes": 285,
+        "candidacy_ballots": 50484,
+        "electors": 75768,
+        "null_votes": 388,
+        "valid_votes": 50769,
+        "voters": 51157
+      },
+      "discrepancies": 0,
+      "election_type": "congress",
+      "physical_tables": 256,
+      "province_code": "42",
+      "published": {
+        "blank_votes": 285,
+        "candidacy_ballots": 50484,
+        "electors": 75768,
+        "null_votes": 388,
+        "valid_votes": 50769,
+        "voters": 51157
+      },
+      "published_source_locators": [
+        "07022307.DAT:line:35"
+      ],
+      "scrutiny_type": "definitive"
+    },
+    {
+      "cera_records": 1,
+      "derived": {
+        "blank_votes": 642,
+        "candidacy_ballots": 49317,
+        "electors": 75768,
+        "null_votes": 944,
+        "valid_votes": 49959,
+        "voters": 50903
+      },
+      "discrepancies": 0,
+      "election_type": "senate",
+      "physical_tables": 256,
+      "province_code": "42",
+      "published": {
+        "blank_votes": 642,
+        "candidacy_ballots": 49317,
+        "electors": 75768,
+        "null_votes": 944,
+        "valid_votes": 49959,
+        "voters": 50903
+      },
+      "published_source_locators": [
+        "07032307.DAT:line:45"
+      ],
+      "scrutiny_type": "definitive"
+    }
+  ],
+  "rows": {
+    "published": 2,
+    "results": 7453,
+    "totals": 514
+  },
+  "source_inputs": {
+    "ine_geography_23j": {
+      "bytes": 7532,
+      "path": "ine_geography_23j-2cdc4fd1b003abc4fd16ffd01df3cbdeb2d7a4d8620d6ed346eadcd6ee79426c.raw",
+      "retrieved_at": "2026-10-18T11:03:37.239539+00:00",
+      "sha256": "2cdc4fd1b003abc4fd16ffd01df3cbdeb2d7a4d8620d6ed346eadcd6ee79426c",
+      "source_id": "ine_geography_23j",
+      "url": "https://www.ine.es/jaxiPx/files/tpx/es/csv_bdsc/59781.csv"
+    },
+    "interior_congress_mesa": {
+      "bytes": 4578794,
+      "path": "interior_congress_mesa-e78fc231326a03cf67bbec87b7100ea0c8c46859daa1b2a631c06daaaf1717f8.raw",
+      "retrieved_at": "2026-10-18T11:03:37.715221+00:00",
+      "sha256": "e78fc231326a03cf67bbec87b7100ea0c8c46859daa1b2a631c06daaaf1717f8",
+      "source_id": "interior_congress_mesa",
+      "url": "https://infoelectoral.interior.gob.es/estaticos/docxl/apliextr/02202307_MESA.zip"
+    },
+    "interior_senate_mesa": {
+      "bytes": 8200357,
+      "path": "interior_senate_mesa-f1da7a1d079c663a4163910634a6813f048b932a7de77c64c764fb96ec60b3de.raw",
+      "retrieved_at": "2026-10-18T11:03:38.438945+00:00",
+      "sha256": "f1da7a1d079c663a4163910634a6813f048b932a7de77c64c764fb96ec60b3de",
+      "source_id": "interior_senate_mesa",
+      "url": "https://infoelectoral.interior.gob.es/estaticos/docxl/apliextr/03202307_MESA.zip"
+    }
+  },
+  "status": "completed",
+  "transformation_version": "interior-dat-v1"
+}
