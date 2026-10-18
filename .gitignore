@@ -1,11 +1,15 @@
-# Descargas y datos potencialmente voluminosos
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+work/
 data/raw/
-data/interim/
 data/processed/
+data/interim/
 *.parquet
 *.duckdb
 .env
-.venv/
-__pycache__/
-.pytest_cache/
 .DS_Store
